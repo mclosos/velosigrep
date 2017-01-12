@@ -1,17 +1,23 @@
 import os
-from services import *
 import pexpect
+import argparse
+from auth_data import auth_data
 
-HOST="localhost"
-line_number = 20
-# create connection with ssh, open log with cat
-connection = pexpect.spawn('ssh ' + services[HOST][0] + '@' + HOST + ' cat ' + filename)
+
+# create a parser of arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('--ip', help='ip-address of remote host, example:127.0.0.1')
+parser.add_argument('--file', help='path and name of log file, example: /var/log/syslog')
+parser.add_argument('--line', help='number of target line')
+args = parser.parse_args()
+# create a connection with ssh, open log with cat
+connection = pexpect.spawn('ssh ' + auth_data(args.ip)[0] + '@' + args.ip + ' cat ' + args.file)
 authentication = connection.expect(['Are you sure you want to continue connecting','password:', pexpect.EOF])
 if authentication == 0:
     connection.sendline('yes')
     authentication = connection.expect(['Are you sure you want to continue connecting', 'password:', pexpect.EOF])
 if authentication == 1:
-    connection.sendline(password)
+    connection.sendline(auth_data(args.ip)[1])
     connection.expect(pexpect.EOF)
 elif authentication == 2:
     pass
@@ -19,5 +25,5 @@ elif authentication == 2:
 output = connection.before.decode(encoding='UTF-8')
 # print -100 and +100 lines from which was sent
 for i, line in enumerate(output.split(os.linesep)):
-    if (line_number-100) <= i <= (line_number+100):
+    if (int(args.line)-100) <= i <= (int(args.line)+100):
         print(i, line)
