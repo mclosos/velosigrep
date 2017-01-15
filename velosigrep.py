@@ -7,11 +7,12 @@ from auth_data import auth_data
 # create a parser of arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--ip', help='ip-address of remote host, example:127.0.0.1')
-parser.add_argument('--file', help='path and name of log file, example: /var/log/syslog')
+parser.add_argument('--path', help='path to the log file, example: /var/log/', default='/var/log/')
+parser.add_argument('--file', help='name of log file, example: syslog')
 parser.add_argument('--line', help='number of target line')
 args = parser.parse_args()
 # create a connection with ssh, open log with cat
-connection = pexpect.spawn('ssh ' + auth_data(args.ip)[0] + '@' + args.ip + ' cat ' + args.file)
+connection = pexpect.spawn('ssh ' + auth_data(args.ip)[0] + '@' + args.ip + ' cat ' + args.path + args.file)
 authentication = connection.expect(['Are you sure you want to continue connecting','password:', pexpect.EOF])
 if authentication == 0:
     connection.sendline('yes')

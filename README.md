@@ -1,10 +1,14 @@
 # velosigrep
 
-python 2.7.6
+Script connects to remote host, read specified file, print -100 and +100 lines from specified line.
 
-importing data from file services.py
+Be sure you have port 22 opened on target host.
 
-services = {"localhost": ["username"]}                  
-filename = '/var/log/syslog\n'                          
-password = b'1234'                                       
+<pre>
+python == 3.4.3
+pexpect==4.2.1
+</pre>
 
+importing authentication data from auth_data.py
+
+Usage: python3 velosigrep.py --ip=localhost --path=/logs/ --file=logfile --line=150
